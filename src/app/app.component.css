@@ -1,0 +1,71 @@
+.container {
+  display: block;
+}
+
+.header {
+  flex: 1;
+  text-align: right;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+.sidebar ul,
+.main ul,
+.details {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li,
+.main ul li {
+  cursor: pointer;
+}
+
+.sidebar ul li:hover,
+.main ul li:hover {
+  opacity: 0.7;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+}
+
+.sidebar {
+  flex: 1;
+  padding: 20px;
+  background-color: #f2f2f2;
+  white-space: nowrap;
+}
+
+.sidebar h2 {
+  margin-bottom: 10px;
+}
+
+.main {
+  flex: 2;
+  padding: 20px;
+}
+
+.main h2 {
+  margin-bottom: 10px;
+}
+
+.feature-details {
+  margin-top: 20px;
+}
+
+.details {
+  flex: 1;
+  padding: 20px;
+}
+
+.details h2 {
+  margin-bottom: 10px;
+}
+
+.welcome-text {
+  font-size: 14px;
+  display: inline;
+}
