@@ -1,39 +1,9 @@
 import { Component } from '@angular/core';
+import { Project } from "./model/Project";
+import { Feature } from "./model/Feature";
+import { Task } from "./model/Task";
+import { User } from "./model/User";
 
-interface User {
-  login: string;
-  firstName: string;
-  lastName: string;
-  permissions: string;
-}
-
-interface Task {
-  name: string;
-  description: string;
-  priority: string;
-  feature: Feature;
-  estimatedCompletionTime: number;
-  status: 'todo' | 'doing' | 'done';
-  dateAdded: Date;
-  startDate?: Date;
-  endDate?: Date;
-  responsibleUser: 'devops' | 'developer';
-  user?: User;
-}
-
-interface Feature {
-  name: string;
-  description: string;
-  priority: string;
-  project: Project;
-  owner: string;
-  status: 'todo' | 'doing' | 'done';
-}
-
-interface Project {
-  name: string;
-  description: string;
-}
 
 @Component({
   selector: 'app-root',
@@ -45,7 +15,8 @@ export class AppComponent {
     login: 'tkopacz',
     firstName: 'Tomasz',
     lastName: 'Kopacz',
-    permissions: 'admin'
+    permissions: 'admin',
+    password: '123'
   };
 
   projects: Project[] = [
@@ -164,20 +135,56 @@ export class AppComponent {
   selectedProject: Project | null = this.projects[0];
   selectedFeature: Feature | null = null;
   selectedTask: Task | null = null;
+  selectedFeatureToEdit: Feature | null = null;
+  selectedTaskToEdit: Task | null = null;
+
+  addNewProjectFormVisible: boolean = false;
+  newProjectName: string = '';
+  newProjectDescription: string = '';
+
+  addNewFeatureFormVisible: boolean = false;
+  newFeatureName: string = '';
+  newFeatureDescription: string = '';
+  newFeaturePriority: string = 'Medium';
+
+  addNewTaskFormVisible: boolean = false;
+  newTaskName: string = '';
+  newTaskDescription: string = '';
+  newTaskPriority: string = 'Low';
+  newTaskEstimatedCompletionTime: number = 0;
+
+  editProjectFormVisible: boolean = false;
+  editProjectName: string = '';
+  editProjectDescription: string = '';
+
+  editFeatureName: string = '';
+  editFeatureDescription: string = '';
+  editFeaturePriority: string = 'Medium';
+
+  editTaskName: string = '';
+  editTaskDescription: string = '';
+  editTaskPriority: string = 'Low';
+  editTaskEstimatedCompletionTime: number = 0;
 
   selectProject(project: Project) {
     this.selectedProject = project;
     this.selectedFeature = null;
     this.selectedTask = null;
+    this.selectedFeatureToEdit = null;
+    this.selectedTaskToEdit = null;
   }
 
   showFeatureDetails(feature: Feature) {
     this.selectedFeature = feature;
     this.selectedTask = null;
+    this.selectedFeatureToEdit = null;
+    this.selectedTaskToEdit = null;
   }
 
   showTaskDetails(task: Task) {
     this.selectedTask = task;
+    this.selectedFeatureToEdit = null;
+    this.selectedTaskToEdit = null;
   }
 
   getFeaturesForSelected(): Feature[] {
@@ -197,9 +204,10 @@ export class AppComponent {
   getFeatureStatus(feature: Feature): string {
     const tasks = this.getTasksForSelected();
     const taskCount = tasks.length;
+    const todoCount = tasks.filter(task => task.status === 'todo').length;
     const doneCount = tasks.filter(task => task.status === 'done').length;
 
-    if (taskCount === 0) {
+    if (taskCount === 0 || todoCount == taskCount) {
       return 'todo';
     } else if (doneCount === taskCount) {
       return 'done';
@@ -207,6 +215,7 @@ export class AppComponent {
       return 'doing';
     }
   }
+
   updateTaskStatus(task: Task) {
     if (task.status === 'done') {
       task.endDate = new Date();
@@ -218,16 +227,162 @@ export class AppComponent {
     }
   }
 
+  addNewProject() {
+    const newProject: Project = {
+      name: this.newProjectName,
+      description: this.newProjectDescription
+    };
 
-  updateFeatureStatus() {
-    // Logika aktualizacji stanu funkcjonalności (Feature)
+    this.projects.push(newProject);
+
+    this.newProjectName = '';
+    this.newProjectDescription = '';
+    this.addNewProjectFormVisible = false;
   }
 
-  addNewProject() {
-    // Obsługa dodawania nowego projektu
+  cancelNewProject() {
+    this.newProjectName = '';
+    this.newProjectDescription = '';
+    this.addNewProjectFormVisible = false;
+  }
+
+  editProject(project: Project) {
+    this.editProjectFormVisible = true;
+    this.editProjectName = project.name;
+    this.editProjectDescription = project.description;
+  }
+
+  saveEditedProject(project: Project) {
+    project.name = this.editProjectName;
+    project.description = this.editProjectDescription;
+    this.editProjectFormVisible = false;
+  }
+
+  cancelEditProject() {
+    this.editProjectFormVisible = false;
+  }
+
+  deleteProject(project: Project) {
+    const index = this.projects.indexOf(project);
+    if (index !== -1) {
+      this.projects.splice(index, 1);
+      if (this.selectedProject === project) {
+        this.selectedProject = null;
+      }
+    }
   }
 
   addNewFeature() {
-    // Obsługa dodawania nowej funkcjonalności
+    const newFeature: Feature = {
+      name: this.newFeatureName,
+      description: this.newFeatureDescription,
+      priority: this.newFeaturePriority,
+      project: this.selectedProject!,
+      owner: this.currentUser.login,
+      status: 'todo'
+    };
+
+    this.features.push(newFeature);
+
+    this.newFeatureName = '';
+    this.newFeatureDescription = '';
+    this.newFeaturePriority = 'Medium';
+    this.addNewFeatureFormVisible = false;
+  }
+
+  cancelNewFeature() {
+    this.newFeatureName = '';
+    this.newFeatureDescription = '';
+    this.newFeaturePriority = 'Medium';
+    this.addNewFeatureFormVisible = false;
+  }
+
+  editFeature(feature: Feature) {
+    this.selectedFeatureToEdit = feature;
+    this.editFeatureName = feature.name;
+    this.editFeatureDescription = feature.description;
+    this.editFeaturePriority = feature.priority;
+  }
+
+  saveEditedFeature(feature: Feature) {
+    feature.name = this.editFeatureName;
+    feature.description = this.editFeatureDescription;
+    feature.priority = this.editFeaturePriority;
+    this.selectedFeatureToEdit = null;
+  }
+
+  cancelEditFeature() {
+    this.selectedFeatureToEdit = null;
+  }
+
+  deleteFeature(feature: Feature) {
+    const index = this.features.indexOf(feature);
+    if (index !== -1) {
+      this.features.splice(index, 1);
+      if (this.selectedFeature === feature) {
+        this.selectedFeature = null;
+      }
+    }
+  }
+
+  addNewTask() {
+    const newTask: Task = {
+      name: this.newTaskName,
+      description: this.newTaskDescription,
+      priority: this.newTaskPriority,
+      feature: this.selectedFeature!,
+      estimatedCompletionTime: this.newTaskEstimatedCompletionTime,
+      status: 'todo',
+      dateAdded: new Date(),
+      startDate: new Date(),
+      endDate: new Date(),
+      responsibleUser: 'developer'
+    };
+
+    this.tasks.push(newTask);
+
+    this.newTaskName = '';
+    this.newTaskDescription = '';
+    this.newTaskPriority = 'Low';
+    this.newTaskEstimatedCompletionTime = 0;
+    this.addNewTaskFormVisible = false;
+  }
+
+  cancelNewTask() {
+    this.newTaskName = '';
+    this.newTaskDescription = '';
+    this.newTaskPriority = 'Low';
+    this.newTaskEstimatedCompletionTime = 0;
+    this.addNewTaskFormVisible = false;
+  }
+
+  editTask(task: Task) {
+    this.selectedTaskToEdit = task;
+    this.editTaskName = task.name;
+    this.editTaskDescription = task.description;
+    this.editTaskPriority = task.priority;
+    this.editTaskEstimatedCompletionTime = task.estimatedCompletionTime;
+  }
+
+  saveEditedTask(task: Task) {
+    task.name = this.editTaskName;
+    task.description = this.editTaskDescription;
+    task.priority = this.editTaskPriority;
+    task.estimatedCompletionTime = this.editTaskEstimatedCompletionTime;
+    this.selectedTaskToEdit = null;
+  }
+
+  cancelEditTask() {
+    this.selectedTaskToEdit = null;
+  }
+
+  deleteTask(task: Task) {
+    const index = this.tasks.indexOf(task);
+    if (index !== -1) {
+      this.tasks.splice(index, 1);
+      if (this.selectedTask === task) {
+        this.selectedTask = null;
+      }
+    }
   }
 }

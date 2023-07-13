@@ -1,4 +1,4 @@
-import {Feature} from "./Feature.model";
+import {Feature} from "./Feature";
 import {User} from "./User";
 
 export interface Task {
@@ -8,7 +8,7 @@ export interface Task {
   feature: Feature;
   estimatedCompletionTime: number;
   status: 'todo' | 'doing' | 'done';
-  dateAdded: Date;
+  dateAdded?: Date;
   startDate?: Date;
   endDate?: Date;
   responsibleUser: 'devops' | 'developer';

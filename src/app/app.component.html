@@ -3,64 +3,177 @@
     <h1 class="welcome-text">Welcome, {{ currentUser.firstName }} {{ currentUser.lastName }}!</h1>
   </div>
   <div class="content">
-    <div class="sidebar">
+    <div class="projects">
       <h2>Projects</h2>
       <ul class="project-list">
         <li *ngFor="let project of projects" [class.active]="project === selectedProject" (click)="selectProject(project)">
           {{ project.name }}
+          <button (click)="editProject(project)">Edit</button>
+          <button (click)="deleteProject(project)">Delete</button>
         </li>
       </ul>
-      <button (click)="addNewProject()">Add new project</button>
-    </div>
-    <div class="main">
-      <h2>Features</h2>
-      <ul class="feature-list">
-        <li *ngFor="let feature of getFeaturesForSelected()" [class.active]="feature === selectedFeature" (click)="showFeatureDetails(feature)">
-          {{ feature.name }}
-        </li>
-      </ul>
-      <button (click)="addNewFeature()">Add feature</button>
-    </div>
-    <div class="details">
-      <h3>Feature Details</h3>
-      <div *ngIf="selectedFeature">
-        <p>Name: {{ selectedFeature.name }}</p>
-        <p>Description: {{ selectedFeature.description }}</p>
-        <p>Priority: {{ selectedFeature.priority }}</p>
-        <p>Project: {{ selectedFeature.project.name }}</p>
-        <p>Owner: {{ selectedFeature.owner }}</p>
-        <p>Status: {{ getFeatureStatus(selectedFeature) }}</p>
-      </div>
-    </div>
-    <div class="tasks">
-      <h2>Tasks</h2>
-      <ul class="task-list">
-        <li *ngFor="let task of getTasksForSelected()" [class.active]="task === selectedTask" (click)="showTaskDetails(task)">
-          {{ task.name }}
-        </li>
-      </ul>
-    </div>
-    <div class="details">
-      <h3>Task Details</h3>
-      <div *ngIf="selectedTask">
-        <p>Name: {{ selectedTask.name }}</p>
-        <p>Description: {{ selectedTask.description }}</p>
-        <p>Priority: {{ selectedTask.priority }}</p>
-        <p>Feature: {{ selectedTask.feature.name }}</p>
-        <p>Estimated Completion Time: {{ selectedTask.estimatedCompletionTime }}</p>
-        <p>Status:
-          <select [(ngModel)]="selectedTask.status" (ngModelChange)="updateTaskStatus(selectedTask)">
-            <option value="todo">Todo</option>
-            <option value="doing">Doing</option>
-            <option value="done">Done</option>
-          </select>
-        </p>
-        <p>Date Added: {{ selectedTask.dateAdded | date }}</p>
-        <p>Start Date: {{ selectedTask.startDate | date }}</p>
-        <p>End Date: {{ selectedTask.endDate | date }}</p>
-        <p>Responsible User: {{ selectedTask.responsibleUser }}</p>
-      </div>
-    </div>
+      <button (click)="addNewProjectFormVisible = true">Add new project</button>
 
+      <div *ngIf="addNewProjectFormVisible">
+        <h3>Add New Project</h3>
+        <form (ngSubmit)="addNewProject()">
+          <div>
+            <label for="newProjectName">Name:</label>
+            <input type="text" id="newProjectName" [(ngModel)]="newProjectName" required>
+          </div>
+          <div>
+            <label for="newProjectDescription">Description:</label>
+            <textarea id="newProjectDescription" [(ngModel)]="newProjectDescription"></textarea>
+          </div>
+          <button type="submit">Save</button>
+          <button type="button" (click)="cancelNewProject()">Cancel</button>
+        </form>
+      </div>
     </div>
   </div>
+
+  <div class="details">
+    <h3>Project Details</h3>
+    <div *ngIf="selectedProject">
+      <p>Name: {{ selectedProject.name }}</p>
+      <p>Description: {{ selectedProject.description }}</p>
+    </div>
+  </div>
+
+  <div class="features">
+    <h2>Features</h2>
+    <ul class="feature-list">
+      <li *ngFor="let feature of getFeaturesForSelected()" [class.active]="feature === selectedFeature"
+          (click)="showFeatureDetails(feature)">
+        {{ feature.name }}
+        <button (click)="editFeature(feature)">Edit</button>
+        <button (click)="deleteFeature(feature)">Delete</button>
+      </li>
+    </ul>
+    <button (click)="addNewFeatureFormVisible = true">Add feature</button>
+
+    <div *ngIf="addNewFeatureFormVisible">
+      <h3>Add New Feature</h3>
+      <form (ngSubmit)="addNewFeature()">
+        <div>
+          <label for="newFeatureName">Name:</label>
+          <input type="text" id="newFeatureName" [(ngModel)]="newFeatureName" required>
+        </div>
+        <div>
+          <label for="newFeatureDescription">Description:</label>
+          <textarea id="newFeatureDescription" [(ngModel)]="newFeatureDescription"></textarea>
+        </div>
+        <div>
+          <label for="newFeaturePriority">Priority:</label>
+          <select id="newFeaturePriority" [(ngModel)]="newFeaturePriority">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        <button type="submit">Save</button>
+        <button type="button" (click)="cancelNewFeature()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="selectedFeatureToEdit">
+    <h3>Edit Feature</h3>
+    <form (ngSubmit)="saveEditedFeature()">
+      <div>
+        <label for="editFeatureName">Name:</label>
+        <input type="text" id="editFeatureName" [(ngModel)]="editFeatureName" required>
+      </div>
+      <div>
+        <label for="editFeatureDescription">Description:</label>
+        <textarea id="editFeatureDescription" [(ngModel)]="editFeatureDescription"></textarea>
+      </div>
+      <div>
+        <label for="editFeaturePriority">Priority:</label>
+        <select id="editFeaturePriority" [(ngModel)]="editFeaturePriority">
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+      <button type="submit">Save</button>
+      <button type="button" (click)="cancelEditFeature()">Cancel</button>
+    </form>
+  </div>
+
+  <div class="details">
+    <h3>Feature Details</h3>
+    <div *ngIf="selectedFeature">
+      <p>Name: {{ selectedFeature.name }}</p>
+      <p>Description: {{ selectedFeature.description }}</p>
+      <p>Priority: {{ selectedFeature.priority }}</p>
+      <p>Project: {{ selectedFeature.project.name }}</p>
+      <p>Owner: {{ selectedFeature.owner }}</p>
+      <p>Status: {{ getFeatureStatus(selectedFeature) }}</p>
+    </div>
+  </div>
+
+  <div class="tasks">
+    <h2>Tasks</h2>
+    <ul class="task-list">
+      <li *ngFor="let task of getTasksForSelected()" [class.active]="task === selectedTask"
+          (click)="showTaskDetails(task)">
+        {{ task.name }}
+        <button (click)="editTask(task)">Edit</button>
+        <button (click)="deleteTask(task)">Delete</button>
+      </li>
+    </ul>
+    <button (click)="addNewTaskFormVisible = true">Add task</button>
+
+    <div *ngIf="addNewTaskFormVisible">
+      <h3>Add New Task</h3>
+      <form (ngSubmit)="addNewTask()">
+        <div>
+          <label for="newTaskName">Name:</label>
+          <input type="text" id="newTaskName" [(ngModel)]="newTaskName" required>
+        </div>
+        <div>
+          <label for="newTaskDescription">Description:</label>
+          <textarea id="newTaskDescription" [(ngModel)]="newTaskDescription"></textarea>
+        </div>
+        <div>
+          <label for="newTaskPriority">Priority:</label>
+          <select id="newTaskPriority" [(ngModel)]="newTaskPriority">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        <div>
+          <label for="newTaskEstimatedCompletionTime">Estimated Completion Time:</label>
+          <input type="number" id="newTaskEstimatedCompletionTime" [(ngModel)]="newTaskEstimatedCompletionTime"
+                 required>
+        </div>
+        <button type="submit">Save</button>
+        <button type="button" (click)="cancelNewTask()">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="details">
+    <h3>Task Details</h3>
+    <div *ngIf="selectedTask">
+      <p>Name: {{ selectedTask.name }}</p>
+      <p>Description: {{ selectedTask.description }}</p>
+      <p>Priority: {{ selectedTask.priority }}</p>
+      <p>Feature: {{ selectedTask.feature.name }}</p>
+      <p>Estimated Completion Time: {{ selectedTask.estimatedCompletionTime }}</p>
+      <p>Status:
+        <select [(ngModel)]="selectedTask.status" (ngModelChange)="updateTaskStatus(selectedTask)">
+          <option value="todo">Todo</option>
+          <option value="doing">Doing</option>
+          <option value="done">Done</option>
+        </select>
+      </p>
+      <p>Date Added: {{ selectedTask.dateAdded | date }}</p>
+      <p>Start Date: {{ selectedTask.startDate | date }}</p>
+      <p>End Date: {{ selectedTask.endDate | date }}</p>
+      <p>Responsible User: {{ selectedTask.responsibleUser }}</p>
+    </div>
+  </div>
+</div>
