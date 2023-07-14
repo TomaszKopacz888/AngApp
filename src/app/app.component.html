@@ -6,7 +6,8 @@
     <div class="projects">
       <h2>Projects</h2>
       <ul class="project-list">
-        <li *ngFor="let project of projects" [class.active]="project === selectedProject" (click)="selectProject(project)">
+        <li *ngFor="let project of projects" [class.active]="project === selectedProject"
+            (click)="selectProject(project)">
           {{ project.name }}
           <button (click)="editProject(project)">Edit</button>
           <button (click)="deleteProject(project)">Delete</button>
@@ -19,11 +20,11 @@
         <form (ngSubmit)="addNewProject()">
           <div>
             <label for="newProjectName">Name:</label>
-            <input type="text" id="newProjectName" [(ngModel)]="newProjectName" required>
+            <input type="text" id="newProjectName" [(ngModel)]="newProjectName" [ngModelOptions]="{standalone: true}" required>
           </div>
           <div>
             <label for="newProjectDescription">Description:</label>
-            <textarea id="newProjectDescription" [(ngModel)]="newProjectDescription"></textarea>
+            <textarea id="newProjectDescription" [(ngModel)]="newProjectDescription" [ngModelOptions]="{standalone: true}"></textarea>
           </div>
           <button type="submit">Save</button>
           <button type="button" (click)="cancelNewProject()">Cancel</button>
@@ -37,6 +38,21 @@
     <div *ngIf="selectedProject">
       <p>Name: {{ selectedProject.name }}</p>
       <p>Description: {{ selectedProject.description }}</p>
+    </div>
+    <div *ngIf="selectedProjectToEdit">
+      <h3>Edit Project</h3>
+      <form (ngSubmit)="saveEditedProject(selectedProjectToEdit)">
+        <div>
+          <label for="editProjectName">Name:</label>
+          <input type="text" id="editProjectName" [(ngModel)]="editProjectName" [ngModelOptions]="{standalone: true}" required>
+        </div>
+        <div>
+          <label for="editProjectDescription">Description:</label>
+          <textarea id="editProjectDescription" [(ngModel)]="editProjectDescription" [ngModelOptions]="{standalone: true}"></textarea>
+        </div>
+        <button type="submit">Save</button>
+        <button type="button" (click)="cancelEditProject()">Cancel</button>
+      </form>
     </div>
   </div>
 
@@ -57,15 +73,15 @@
       <form (ngSubmit)="addNewFeature()">
         <div>
           <label for="newFeatureName">Name:</label>
-          <input type="text" id="newFeatureName" [(ngModel)]="newFeatureName" required>
+          <input type="text" id="newFeatureName" [(ngModel)]="newFeatureName" [ngModelOptions]="{standalone: true}" required>
         </div>
         <div>
           <label for="newFeatureDescription">Description:</label>
-          <textarea id="newFeatureDescription" [(ngModel)]="newFeatureDescription"></textarea>
+          <textarea id="newFeatureDescription" [(ngModel)]="newFeatureDescription" [ngModelOptions]="{standalone: true}"></textarea>
         </div>
         <div>
           <label for="newFeaturePriority">Priority:</label>
-          <select id="newFeaturePriority" [(ngModel)]="newFeaturePriority">
+          <select id="newFeaturePriority" [(ngModel)]="newFeaturePriority" [ngModelOptions]="{standalone: true}">
             <option value="High">High</option>
             <option value="Medium">Medium</option>
             <option value="Low">Low</option>
@@ -77,30 +93,6 @@
     </div>
   </div>
 
-  <div *ngIf="selectedFeatureToEdit">
-    <h3>Edit Feature</h3>
-    <form (ngSubmit)="saveEditedFeature()">
-      <div>
-        <label for="editFeatureName">Name:</label>
-        <input type="text" id="editFeatureName" [(ngModel)]="editFeatureName" required>
-      </div>
-      <div>
-        <label for="editFeatureDescription">Description:</label>
-        <textarea id="editFeatureDescription" [(ngModel)]="editFeatureDescription"></textarea>
-      </div>
-      <div>
-        <label for="editFeaturePriority">Priority:</label>
-        <select id="editFeaturePriority" [(ngModel)]="editFeaturePriority">
-          <option value="High">High</option>
-          <option value="Medium">Medium</option>
-          <option value="Low">Low</option>
-        </select>
-      </div>
-      <button type="submit">Save</button>
-      <button type="button" (click)="cancelEditFeature()">Cancel</button>
-    </form>
-  </div>
-
   <div class="details">
     <h3>Feature Details</h3>
     <div *ngIf="selectedFeature">
@@ -110,6 +102,29 @@
       <p>Project: {{ selectedFeature.project.name }}</p>
       <p>Owner: {{ selectedFeature.owner }}</p>
       <p>Status: {{ getFeatureStatus(selectedFeature) }}</p>
+    </div>
+    <div *ngIf="selectedFeatureToEdit">
+      <h3>Edit Feature</h3>
+      <form (ngSubmit)="saveEditedFeature(selectedFeatureToEdit)">
+        <div>
+          <label for="editFeatureName">Name:</label>
+          <input type="text" id="editFeatureName" [(ngModel)]="editFeatureName" [ngModelOptions]="{standalone: true}" required>
+        </div>
+        <div>
+          <label for="editFeatureDescription">Description:</label>
+          <textarea id="editFeatureDescription" [(ngModel)]="editFeatureDescription" [ngModelOptions]="{standalone: true}"></textarea>
+        </div>
+        <div>
+          <label for="editFeaturePriority">Priority:</label>
+          <select id="editFeaturePriority" [(ngModel)]="editFeaturePriority" [ngModelOptions]="{standalone: true}">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        <button type="submit">Save</button>
+        <button type="button" (click)="cancelEditFeature()">Cancel</button>
+      </form>
     </div>
   </div>
 
@@ -130,15 +145,15 @@
       <form (ngSubmit)="addNewTask()">
         <div>
           <label for="newTaskName">Name:</label>
-          <input type="text" id="newTaskName" [(ngModel)]="newTaskName" required>
+          <input type="text" id="newTaskName" [(ngModel)]="newTaskName" [ngModelOptions]="{standalone: true}" required>
         </div>
         <div>
           <label for="newTaskDescription">Description:</label>
-          <textarea id="newTaskDescription" [(ngModel)]="newTaskDescription"></textarea>
+          <textarea id="newTaskDescription" [(ngModel)]="newTaskDescription" [ngModelOptions]="{standalone: true}"></textarea>
         </div>
         <div>
           <label for="newTaskPriority">Priority:</label>
-          <select id="newTaskPriority" [(ngModel)]="newTaskPriority">
+          <select id="newTaskPriority" [(ngModel)]="newTaskPriority" [ngModelOptions]="{standalone: true}">
             <option value="High">High</option>
             <option value="Medium">Medium</option>
             <option value="Low">Low</option>
@@ -146,8 +161,7 @@
         </div>
         <div>
           <label for="newTaskEstimatedCompletionTime">Estimated Completion Time:</label>
-          <input type="number" id="newTaskEstimatedCompletionTime" [(ngModel)]="newTaskEstimatedCompletionTime"
-                 required>
+          <input type="number" id="newTaskEstimatedCompletionTime" [(ngModel)]="newTaskEstimatedCompletionTime" [ngModelOptions]="{standalone: true}" required>
         </div>
         <button type="submit">Save</button>
         <button type="button" (click)="cancelNewTask()">Cancel</button>
@@ -174,6 +188,33 @@
       <p>Start Date: {{ selectedTask.startDate | date }}</p>
       <p>End Date: {{ selectedTask.endDate | date }}</p>
       <p>Responsible User: {{ selectedTask.responsibleUser }}</p>
+    </div>
+    <div *ngIf="selectedTaskToEdit">
+      <h3>Edit Task</h3>
+      <form (ngSubmit)="saveEditedTask(selectedTaskToEdit)">
+        <div>
+          <label for="editTaskName">Name:</label>
+          <input type="text" id="editTaskName" [(ngModel)]="editTaskName" [ngModelOptions]="{standalone: true}" required>
+        </div>
+        <div>
+          <label for="editTaskDescription">Description:</label>
+          <textarea id="editTaskDescription" [(ngModel)]="editTaskDescription" [ngModelOptions]="{standalone: true}"></textarea>
+        </div>
+        <div>
+          <label for="editTaskPriority">Priority:</label>
+          <select id="editTaskPriority" [(ngModel)]="editTaskPriority" [ngModelOptions]="{standalone: true}">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        <div>
+          <label for="editTaskEstimatedCompletionTime">Estimated Completion Time:</label>
+          <input type="number" id="editTaskEstimatedCompletionTime" [(ngModel)]="editTaskEstimatedCompletionTime" [ngModelOptions]="{standalone: true}" required>
+        </div>
+        <button type="submit">Save</button>
+        <button type="button" (click)="cancelEditTask()">Cancel</button>
+      </form>
     </div>
   </div>
 </div>

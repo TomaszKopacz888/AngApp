@@ -4,7 +4,6 @@ import { Feature } from "./model/Feature";
 import { Task } from "./model/Task";
 import { User } from "./model/User";
 
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -133,9 +132,10 @@ export class AppComponent {
   ];
 
   selectedProject: Project | null = this.projects[0];
+  selectedProjectToEdit: Project | null = null;
   selectedFeature: Feature | null = null;
-  selectedTask: Task | null = null;
   selectedFeatureToEdit: Feature | null = null;
+  selectedTask: Task | null = null;
   selectedTaskToEdit: Task | null = null;
 
   addNewProjectFormVisible: boolean = false;
@@ -153,7 +153,6 @@ export class AppComponent {
   newTaskPriority: string = 'Low';
   newTaskEstimatedCompletionTime: number = 0;
 
-  editProjectFormVisible: boolean = false;
   editProjectName: string = '';
   editProjectDescription: string = '';
 
@@ -170,21 +169,15 @@ export class AppComponent {
     this.selectedProject = project;
     this.selectedFeature = null;
     this.selectedTask = null;
-    this.selectedFeatureToEdit = null;
-    this.selectedTaskToEdit = null;
   }
 
   showFeatureDetails(feature: Feature) {
     this.selectedFeature = feature;
     this.selectedTask = null;
-    this.selectedFeatureToEdit = null;
-    this.selectedTaskToEdit = null;
   }
 
   showTaskDetails(task: Task) {
     this.selectedTask = task;
-    this.selectedFeatureToEdit = null;
-    this.selectedTaskToEdit = null;
   }
 
   getFeaturesForSelected(): Feature[] {
@@ -247,7 +240,7 @@ export class AppComponent {
   }
 
   editProject(project: Project) {
-    this.editProjectFormVisible = true;
+    this.selectedProjectToEdit = project;
     this.editProjectName = project.name;
     this.editProjectDescription = project.description;
   }
@@ -255,20 +248,19 @@ export class AppComponent {
   saveEditedProject(project: Project) {
     project.name = this.editProjectName;
     project.description = this.editProjectDescription;
-    this.editProjectFormVisible = false;
+    this.cancelEditProject();
   }
 
   cancelEditProject() {
-    this.editProjectFormVisible = false;
+    this.selectedProjectToEdit = null;
+    this.editProjectName = '';
+    this.editProjectDescription = '';
   }
 
   deleteProject(project: Project) {
     const index = this.projects.indexOf(project);
     if (index !== -1) {
       this.projects.splice(index, 1);
-      if (this.selectedProject === project) {
-        this.selectedProject = null;
-      }
     }
   }
 
@@ -308,20 +300,20 @@ export class AppComponent {
     feature.name = this.editFeatureName;
     feature.description = this.editFeatureDescription;
     feature.priority = this.editFeaturePriority;
-    this.selectedFeatureToEdit = null;
+    this.cancelEditFeature();
   }
 
   cancelEditFeature() {
     this.selectedFeatureToEdit = null;
+    this.editFeatureName = '';
+    this.editFeatureDescription = '';
+    this.editFeaturePriority = 'Medium';
   }
 
   deleteFeature(feature: Feature) {
     const index = this.features.indexOf(feature);
     if (index !== -1) {
       this.features.splice(index, 1);
-      if (this.selectedFeature === feature) {
-        this.selectedFeature = null;
-      }
     }
   }
 
@@ -369,20 +361,21 @@ export class AppComponent {
     task.description = this.editTaskDescription;
     task.priority = this.editTaskPriority;
     task.estimatedCompletionTime = this.editTaskEstimatedCompletionTime;
-    this.selectedTaskToEdit = null;
+    this.cancelEditTask();
   }
 
   cancelEditTask() {
     this.selectedTaskToEdit = null;
+    this.editTaskName = '';
+    this.editTaskDescription = '';
+    this.editTaskPriority = 'Low';
+    this.editTaskEstimatedCompletionTime = 0;
   }
 
   deleteTask(task: Task) {
     const index = this.tasks.indexOf(task);
     if (index !== -1) {
       this.tasks.splice(index, 1);
-      if (this.selectedTask === task) {
-        this.selectedTask = null;
-      }
     }
   }
 }
